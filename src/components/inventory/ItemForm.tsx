@@ -17,6 +17,7 @@ interface ItemFormProps {
     usage: 'internal' | 'external';
     image_url: string | null;
     observations: string | null;
+    en_prestec: string | null;
   } | null;
   onClose: () => void;
   onSave: () => void;
@@ -29,6 +30,7 @@ interface FormData {
   subfamily_id: string;
   usage: 'internal' | 'external';
   observations: string;
+  en_prestec: string;
 }
 
 interface Family {
@@ -50,6 +52,8 @@ export function ItemForm({ item, onClose, onSave }: ItemFormProps) {
   const [newItemId, setNewItemId] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(item?.image_url || '');
+  const [selectedFamilyId, setSelectedFamilyId] = useState<string>(item?.family_id || '');
+  const [selectedSubfamilyId, setSelectedSubfamilyId] = useState<string>(item?.subfamily_id || '');
 
   const {
     register,
@@ -66,17 +70,34 @@ export function ItemForm({ item, onClose, onSave }: ItemFormProps) {
       subfamily_id: item?.subfamily_id || '',
       usage: item?.usage || 'internal',
       observations: item?.observations || '',
+      en_prestec: item?.en_prestec || '',
     },
   });
 
   const watchedFamilyId = watch('family_id');
 
   useEffect(() => {
-    fetchFamilies();
-    if (watchedFamilyId) {
-      fetchSubfamilies(watchedFamilyId);
-    }
-  }, [watchedFamilyId]);
+    const loadInitialData = async () => {
+      await fetchFamilies();
+      if (item?.family_id) {
+        await fetchSubfamilies(item.family_id);
+      }
+    };
+    loadInitialData();
+  }, []);
+
+  useEffect(() => {
+    const loadSubfamilies = async () => {
+      if (selectedFamilyId) {
+        await fetchSubfamilies(selectedFamilyId);
+        if (!item || selectedFamilyId !== item.family_id) {
+          setSelectedSubfamilyId('');
+          setValue('subfamily_id', '');
+        }
+      }
+    };
+    loadSubfamilies();
+  }, [selectedFamilyId]);
 
   const fetchFamilies = async () => {
     try {
@@ -157,6 +178,8 @@ export function ItemForm({ item, onClose, onSave }: ItemFormProps) {
         usage: data.usage,
         observations: data.observations || null,
         image_url: finalImageUrl,
+        en_prestec: data.en_prestec || null,
+        created_at: new Date().toISOString(),
       };
 
       if (item) {
@@ -247,9 +270,14 @@ export function ItemForm({ item, onClose, onSave }: ItemFormProps) {
                 {...register('family_id')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 required
+                value={selectedFamilyId}
                 onChange={(e) => {
-                  setValue('family_id', e.target.value);
-                  setValue('subfamily_id', '');
+                  const newFamilyId = e.target.value;
+                  setSelectedFamilyId(newFamilyId);
+                  setValue('family_id', newFamilyId);
+                  if (!item || newFamilyId !== item.family_id) {
+                    setValue('subfamily_id', '');
+                  }
                 }}
               >
                 <option value="">Selecciona una família</option>
@@ -267,6 +295,12 @@ export function ItemForm({ item, onClose, onSave }: ItemFormProps) {
                 {...register('subfamily_id')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 required
+                value={selectedSubfamilyId}
+                onChange={(e) => {
+                  const newSubfamilyId = e.target.value;
+                  setSelectedSubfamilyId(newSubfamilyId);
+                  setValue('subfamily_id', newSubfamilyId);
+                }}
               >
                 <option value="">Selecciona una subfamília</option>
                 {subfamilies.map((subfamily) => (
@@ -295,6 +329,16 @@ export function ItemForm({ item, onClose, onSave }: ItemFormProps) {
                 {...register('observations')}
                 rows={3}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">En préstec</label>
+              <textarea
+                {...register('en_prestec')}
+                rows={3}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                placeholder="Detalls del préstec..."
               />
             </div>
 
