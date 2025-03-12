@@ -6,9 +6,9 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 const navigation = [
-  { name: 'Tauler', href: '/dashboard', current: true },
-  { name: 'Localitzacions', href: '/dashboard/locations', current: false },
+  { name: 'Inici', href: '/dashboard', current: false },
   { name: 'Inventari', href: '/dashboard/inventory', current: false },
+  { name: 'Ubicacions', href: '/dashboard/locations', current: false },
   { name: 'Informes', href: '/dashboard/reports', current: false },
 ];
 

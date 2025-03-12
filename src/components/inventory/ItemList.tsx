@@ -86,14 +86,14 @@ export function ItemList({ limit = 3 }) {
         created_at: item.created_at,
         en_prestec: item.en_prestec,
         family: {
-          name: item.families?.name || 'Sin familia'
+          name: item.families?.name || 'Sense família'
         },
         subfamily: {
-          name: item.subfamilies?.name || 'Sin subfamilia'
+          name: item.subfamilies?.name || 'Sense subfamília'
         },
         item_locations: (item.item_locations || []).map((il: any) => ({
           location: {
-            name: il.locations?.name || 'Sin ubicación'
+            name: il.locations?.name || 'Sense ubicació'
           },
           quantity: il.quantity || 0
         }))
@@ -113,7 +113,7 @@ export function ItemList({ limit = 3 }) {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de que deseas eliminar este item?')) return;
+    if (!confirm('Estàs segur que vols eliminar aquest ítem?')) return;
 
     try {
       const { error } = await supabase
@@ -124,7 +124,7 @@ export function ItemList({ limit = 3 }) {
       if (error) throw error;
       await fetchItems();
     } catch (error) {
-      console.error('Error al eliminar el item:', error);
+      console.error('Error en eliminar l\'ítem:', error);
     }
   };
 
@@ -141,7 +141,7 @@ export function ItemList({ limit = 3 }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-48">
-        <div className="text-xl">Cargando inventario...</div>
+        <div className="text-xl">Carregant inventari...</div>
       </div>
     );
   }
@@ -149,7 +149,7 @@ export function ItemList({ limit = 3 }) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl md:text-2xl font-bold text-gray-900 text-lg">Inventario</h2>
+        <h2 className="text-2xl md:text-2xl font-bold text-gray-900 text-lg">Inventari</h2>
         <div className="flex space-x-4 items-center">
           <button
             onClick={() => {
@@ -247,7 +247,7 @@ export function ItemList({ limit = 3 }) {
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-blue-100 text-blue-800'
                       }`}>
-                        {item.usage === 'internal' ? 'Interno' : 'Externo'}
+                        {item.usage === 'internal' ? 'Intern' : 'Extern'}
                       </span>
                     </td>
                     <td className="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap">
@@ -291,7 +291,7 @@ export function ItemList({ limit = 3 }) {
                 {items.length === 0 && (
                   <tr>
                     <td colSpan={8} className="px-3 py-2 md:px-6 md:py-4 text-center text-xs md:text-sm text-gray-500">
-                      No hay items registrados
+                      No hi ha ítems registrats
                     </td>
                   </tr>
                 )}
